@@ -2,7 +2,7 @@ const express = require('express')
 const models = require('../db/models/index')
 const router = express.Router()
 const { escapeLike } = require('../db/utils')
-const { wrapAsyncHandler } = require('./utils')
+const { wrapAsyncHandler, renderJsonGenerator } = require('./utils')
 
 function validateProductNamePresence (req, res, next) {
   const productNameQuery = req.query.q
@@ -10,6 +10,16 @@ function validateProductNamePresence (req, res, next) {
     res.sendStatus(400)
   } else {
     next()
+  }
+}
+
+function * formatProducts (products) {
+  for (let product of products) {
+    yield {
+      id: product.id,
+      name: product.name,
+      category: product.category
+    }
   }
 }
 
@@ -24,10 +34,7 @@ async function findProducts (req, res, next) {
     order: [['name', 'ASC']],
     limit: 10
   })
-  const productsData = matchingProducts.map(
-    product => ({ id: product.id, name: product.name, category: product.category })
-  )
-  res.send(productsData)
+  renderJsonGenerator(res, formatProducts(matchingProducts))
 }
 
 /* GET products matching name */
