@@ -31,5 +31,6 @@ const Item = db.define('item', {
 }, {
   timestamps: false
 })
+Item.belongsTo(Product)
 
 module.exports = Item

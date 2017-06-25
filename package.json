@@ -7,7 +7,8 @@
     "test_db_conn": "node ./bin/test_db_conn.js",
     "sync_models": "node ./bin/sync_models.js",
     "create_sample_products": "node ./bin/create_sample_products.js",
-    "create_sample_items": "node ./bin/create_sample_items.js"
+    "create_sample_items": "node ./bin/create_sample_items.js",
+    "get_items": "node ./bin/get_items.js"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
