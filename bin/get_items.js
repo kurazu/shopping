@@ -11,9 +11,12 @@ async function getItems () {
         where: Sequelize.where(Sequelize.col('product.id'), Sequelize.col('item.productId'))
       }]
     })
-    console.log('Items fetched', items)
   } catch (err) {
     console.error('Unable to fetch items', err)
+    return db.close()
+  }
+  for (let item of items) {
+    console.log('Item', item.product.name, 'amount', item.amount, 'bought', item.bought)
   }
   return db.close()
 }
