@@ -29,7 +29,7 @@ async function createSampleProducts () {
   } catch (err) {
     console.error('Unable to create models:', err)
   }
-  db.close()
+  return db.close()
 }
 
 createSampleProducts()

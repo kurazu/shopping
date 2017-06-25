@@ -7,7 +7,7 @@ async function testConnection () {
   } catch (err) {
     console.error('Unable to connect to the database:', err)
   }
-  db.close()
+  return db.close()
 }
 
 testConnection()
