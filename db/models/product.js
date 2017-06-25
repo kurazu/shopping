@@ -1,7 +1,6 @@
-const Sequelize = require('Sequelize')
-const db = require('../connection')
+const Sequelize = require('sequelize')
+const db = require('../index')
 const categories = require('./categories')
-const List = require('./list')
 
 const Product = db.define('product', {
   id: { primaryKey: true, type: Sequelize.UUID, allowNull: false, defaultValue: Sequelize.UUIDV4 },
@@ -10,6 +9,5 @@ const Product = db.define('product', {
 }, {
   timestamps: false
 })
-Product.belongsToMany(List, {through: 'ProductOnList'})
 
 module.exports = Product
