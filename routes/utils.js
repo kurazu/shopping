@@ -1,6 +1,6 @@
 class HttpError extends Error {
-  constructor (code) {
-    super(code)
+  constructor (code, message) {
+    super(message)
     this.code = code
   }
 }
@@ -11,13 +11,15 @@ function wrapAsyncHandler (asyncFunction) {
 
     function handleError (err) {
       console.error('Error in async handler', asyncFunction, err)
-      let errorCode
+      let errorCode, errorMsg
       if (err instanceof HttpError) {
         errorCode = err.code
+        errorMsg = err.message
       } else {
         errorCode = 500
+        errorMsg = 'Internal server error'
       }
-      res.sendStatus(errorCode)
+      res.status(errorCode).json({error: errorMsg})
     }
   }
 }

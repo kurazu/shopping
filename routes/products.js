@@ -2,7 +2,8 @@ const express = require('express')
 const models = require('../db/models/index')
 const router = express.Router()
 const { escapeLike } = require('../db/utils')
-const { wrapAsyncHandler, renderJsonGenerator, HttpError } = require('./utils')
+const { wrapAsyncHandler, HttpError } = require('./utils')
+const Sequelize = require('sequelize')
 
 function validateProductNamePresence (req, res, next) {
   const productNameQuery = req.query.q
@@ -10,16 +11,6 @@ function validateProductNamePresence (req, res, next) {
     res.sendStatus(400)
   } else {
     next()
-  }
-}
-
-function * formatProducts (products) {
-  for (let product of products) {
-    yield {
-      id: product.id,
-      name: product.name,
-      category: product.category
-    }
   }
 }
 
@@ -34,39 +25,38 @@ async function findProducts (req, res, next) {
     order: [['name', 'ASC']],
     limit: 10
   })
-  renderJsonGenerator(res, formatProducts(matchingProducts))
+  res.json(matchingProducts)
 }
 
 async function createProduct (req, res, next) {
   const name = req.body.name
   if (!name) {
     console.error('Missing product name')
-    throw new HttpError(400)
+    throw new HttpError(400, 'Missing product name')
   }
   const category = req.body.category
   if (!category) {
     console.error('Missing product category')
-    throw new HttpError(400)
+    throw new HttpError(400, 'Missing product category')
   }
   if (!models.categories.includes(category)) {
     console.error('Unknown category', category)
-    throw new HttpError(400)
+    throw new HttpError(400, 'Unknown product category')
   }
-  const existingProduct = await models.Product.findOne({
-    where: {
-      name
-    }
-  })
-  // TODO check this on insert!
-  if (existingProduct) {
-    throw new HttpError(409)
-  }
+  let product
   try {
-    debugger
+    product = await models.Product.create({
+      name,
+      category
+    })
   } catch (err) {
-    debugger
+    if (err instanceof Sequelize.UniqueConstraintError) {
+      throw new HttpError(400, 'Duplicated product name')
+    } else {
+      throw err
+    }
   }
-  throw new HttpError(501)
+  res.json(product)
 }
 
 /* GET products matching name */
