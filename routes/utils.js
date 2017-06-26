@@ -1,10 +1,23 @@
+class HttpError extends Error {
+  constructor (code) {
+    super(code)
+    this.code = code
+  }
+}
+
 function wrapAsyncHandler (asyncFunction) {
   return function (req, res, next) {
     asyncFunction(req, res, next).catch(handleError)
 
     function handleError (err) {
       console.error('Error in async handler', asyncFunction, err)
-      res.sendStatus(500)
+      let errorCode
+      if (err instanceof HttpError) {
+        errorCode = err.code
+      } else {
+        errorCode = 500
+      }
+      res.sendStatus(errorCode)
     }
   }
 }
@@ -28,5 +41,6 @@ function renderJsonGenerator (res, generator) {
 
 module.exports = {
   wrapAsyncHandler,
-  renderJsonGenerator
+  renderJsonGenerator,
+  HttpError
 }
