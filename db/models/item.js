@@ -22,6 +22,7 @@ const Item = db.define('item', {
   productId: {
     type: Sequelize.UUID,
     allowNull: false,
+    unique: true,
     references: {
       model: Product,
       key: 'id',

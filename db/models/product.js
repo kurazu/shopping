@@ -4,7 +4,7 @@ const categories = require('./categories')
 
 const Product = db.define('product', {
   id: { primaryKey: true, type: Sequelize.UUID, allowNull: false, defaultValue: Sequelize.UUIDV4 },
-  name: { type: Sequelize.STRING(255), allowNull: false },
+  name: { type: Sequelize.STRING(255), allowNull: false, unique: true },
   category: { type: Sequelize.ENUM, values: categories, allowNull: false }
 }, {
   timestamps: false
