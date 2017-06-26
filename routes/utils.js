@@ -13,21 +13,14 @@ function renderJsonGenerator (res, generator) {
   res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'})
   res.write('[')
   let needsComma = false
-  while (true) {
-    const { done, value } = generator.next()
-    if (value === undefined && done) {
-      break
-    }
+  for (let item of generator) {
     if (needsComma) {
       res.write(',')
     } else {
       needsComma = true
     }
-    const json = JSON.stringify(value)
+    const json = JSON.stringify(item)
     res.write(json)
-    if (done) {
-      break
-    }
   }
   res.write(']')
   res.end()
